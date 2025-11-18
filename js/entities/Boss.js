@@ -43,10 +43,6 @@ class Boss {
 
         // Puntuación
         this.score = 5000 * level;
-
-        // Estado 3D
-        this.is3D = false;
-        this.rotation3D = { x: 0, y: 0, z: 0 };
     }
 
     createWeakPoints() {
@@ -96,12 +92,6 @@ class Boss {
                 this.shaking = false;
                 this.shakeIntensity = 0;
             }
-        }
-
-        // Actualizar rotación 3D
-        if (this.is3D) {
-            this.rotation3D.y += 0.02;
-            this.rotation3D.x = Math.sin(this.movementTime * 0.001) * 0.3;
         }
     }
 
@@ -271,37 +261,102 @@ class Boss {
 
         const renderX = this.x + shakeX;
         const renderY = this.y + shakeY;
+        const time = Date.now();
 
-        // Aura de energía
-        const pulse = Math.sin(Date.now() * 0.005) * 0.3 + 0.7;
+        // Escudo rotatorio según la fase
+        if (this.phase >= 2) {
+            const shieldRadius = this.width * 0.7 + Math.sin(time * 0.003) * 5;
+            const shieldSegments = 6;
+
+            ctx.strokeStyle = `rgba(255, 100, 0, ${0.4 + Math.sin(time * 0.005) * 0.2})`;
+            ctx.lineWidth = 3;
+
+            for (let i = 0; i < shieldSegments; i++) {
+                const angle = (Math.PI * 2 / shieldSegments) * i + time * 0.001;
+                const x = renderX + this.width / 2 + Math.cos(angle) * shieldRadius;
+                const y = renderY + this.height / 2 + Math.sin(angle) * shieldRadius;
+
+                ctx.beginPath();
+                ctx.arc(x, y, 8, 0, Math.PI * 2);
+                ctx.stroke();
+
+                ctx.fillStyle = 'rgba(255, 200, 0, 0.6)';
+                ctx.fill();
+            }
+        }
+
+        // Aura de energía pulsante
+        const pulse = Math.sin(time * 0.005) * 0.3 + 0.7;
         const gradient = ctx.createRadialGradient(
             renderX + this.width / 2,
             renderY + this.height / 2,
             0,
             renderX + this.width / 2,
             renderY + this.height / 2,
-            this.width
+            this.width * 1.2
         );
-        gradient.addColorStop(0, `rgba(255, 0, 0, ${pulse * 0.3})`);
+
+        const phaseColors = [
+            [255, 0, 0],    // Fase 1: Rojo
+            [255, 100, 0],  // Fase 2: Naranja
+            [255, 0, 100]   // Fase 3: Rojo-púrpura
+        ];
+
+        const color = phaseColors[this.phase - 1] || phaseColors[0];
+        gradient.addColorStop(0, `rgba(${color[0]}, ${color[1]}, ${color[2]}, ${pulse * 0.4})`);
+        gradient.addColorStop(0.5, `rgba(${color[0]}, ${color[1]}, ${color[2]}, ${pulse * 0.2})`);
         gradient.addColorStop(1, 'transparent');
 
         ctx.fillStyle = gradient;
         ctx.fillRect(
-            renderX - this.width * 0.2,
-            renderY - this.height * 0.2,
-            this.width * 1.4,
-            this.height * 1.4
+            renderX - this.width * 0.3,
+            renderY - this.height * 0.3,
+            this.width * 1.6,
+            this.height * 1.6
         );
 
-        // Renderizar boss
+        // Rayos de energía en fase 3
+        if (this.phase === 3) {
+            const numRays = 8;
+            ctx.strokeStyle = `rgba(255, 50, 50, ${0.3 + Math.sin(time * 0.01) * 0.2})`;
+            ctx.lineWidth = 2;
+
+            for (let i = 0; i < numRays; i++) {
+                const angle = (Math.PI * 2 / numRays) * i + time * 0.002;
+                const startX = renderX + this.width / 2;
+                const startY = renderY + this.height / 2;
+                const endX = startX + Math.cos(angle) * (this.width * 0.8);
+                const endY = startY + Math.sin(angle) * (this.height * 0.8);
+
+                ctx.beginPath();
+                ctx.moveTo(startX, startY);
+                ctx.lineTo(endX, endY);
+                ctx.stroke();
+            }
+        }
+
+        // Renderizar boss con escala pulsante
         const bossSprite = spriteSystem.getSprite('boss');
         if (bossSprite) {
             // Efecto de daño
             if (this.health < this.maxHealth * 0.3) {
-                ctx.globalAlpha = 0.7 + Math.sin(Date.now() * 0.02) * 0.3;
+                ctx.globalAlpha = 0.7 + Math.sin(time * 0.02) * 0.3;
             }
 
-            ctx.drawImage(bossSprite, renderX, renderY);
+            // Escala pulsante sutil
+            const scale = 1.0 + Math.sin(time * 0.003) * 0.03;
+            const scaledWidth = this.width * scale;
+            const scaledHeight = this.height * scale;
+            const offsetX = (this.width - scaledWidth) / 2;
+            const offsetY = (this.height - scaledHeight) / 2;
+
+            ctx.drawImage(
+                bossSprite,
+                renderX + offsetX,
+                renderY + offsetY,
+                scaledWidth,
+                scaledHeight
+            );
             ctx.globalAlpha = 1;
         }
 
@@ -312,55 +367,141 @@ class Boss {
             const wpX = renderX + wp.x;
             const wpY = renderY + wp.y;
 
-            // Brillo del punto débil
-            ctx.fillStyle = 'rgba(0, 255, 255, 0.3)';
-            ctx.fillRect(wpX - 2, wpY - 2, wp.width + 4, wp.height + 4);
+            // Aura pulsante del punto débil
+            const wpPulse = Math.sin(time * 0.008) * 0.5 + 0.5;
+            const wpGradient = ctx.createRadialGradient(
+                wpX + wp.width / 2,
+                wpY + wp.height / 2,
+                0,
+                wpX + wp.width / 2,
+                wpY + wp.height / 2,
+                wp.width
+            );
+            wpGradient.addColorStop(0, `rgba(0, 255, 255, ${wpPulse * 0.6})`);
+            wpGradient.addColorStop(1, 'transparent');
 
+            ctx.fillStyle = wpGradient;
+            ctx.fillRect(wpX - wp.width, wpY - wp.height, wp.width * 3, wp.height * 3);
+
+            // Borde animado
+            ctx.strokeStyle = `rgba(0, 255, 255, ${wpPulse})`;
+            ctx.lineWidth = 2;
+            ctx.strokeRect(wpX - 2, wpY - 2, wp.width + 4, wp.height + 4);
+
+            // Punto débil principal
             ctx.fillStyle = '#0ff';
             ctx.fillRect(wpX, wpY, wp.width, wp.height);
+
+            // Núcleo brillante
+            ctx.fillStyle = '#fff';
+            const coreSize = 6 + wpPulse * 4;
+            ctx.fillRect(
+                wpX + wp.width / 2 - coreSize / 2,
+                wpY + wp.height / 2 - coreSize / 2,
+                coreSize,
+                coreSize
+            );
 
             // Indicador de vida del punto débil
             const wpHealthPercent = wp.health / 10;
             ctx.fillStyle = wpHealthPercent > 0.5 ? '#0f0' : '#f00';
-            ctx.fillRect(wpX, wpY - 4, wp.width * wpHealthPercent, 2);
+            ctx.fillRect(wpX, wpY - 6, wp.width * wpHealthPercent, 3);
+
+            // Borde del indicador
+            ctx.strokeStyle = '#fff';
+            ctx.lineWidth = 1;
+            ctx.strokeRect(wpX, wpY - 6, wp.width, 3);
         }
 
         // Barra de vida principal
         const barWidth = this.width;
-        const barHeight = 8;
+        const barHeight = 10;
         const healthPercentage = this.health / this.maxHealth;
+        const barY = renderY - barHeight - 12;
 
+        // Fondo de la barra con sombra
+        ctx.shadowColor = 'rgba(0, 0, 0, 0.5)';
+        ctx.shadowBlur = 4;
         ctx.fillStyle = '#300';
-        ctx.fillRect(renderX, renderY - barHeight - 10, barWidth, barHeight);
+        ctx.fillRect(renderX, barY, barWidth, barHeight);
+        ctx.shadowBlur = 0;
 
-        // Gradiente de color basado en salud
-        let healthColor;
+        // Barra de vida con gradiente
+        const healthGradient = ctx.createLinearGradient(
+            renderX,
+            barY,
+            renderX + barWidth * healthPercentage,
+            barY
+        );
+
         if (healthPercentage > 0.66) {
-            healthColor = '#0f0';
+            healthGradient.addColorStop(0, '#0f0');
+            healthGradient.addColorStop(1, '#0ff');
         } else if (healthPercentage > 0.33) {
-            healthColor = '#ff0';
+            healthGradient.addColorStop(0, '#ff0');
+            healthGradient.addColorStop(1, '#f80');
         } else {
-            healthColor = '#f00';
+            healthGradient.addColorStop(0, '#f00');
+            healthGradient.addColorStop(1, '#f50');
         }
 
-        ctx.fillStyle = healthColor;
+        ctx.fillStyle = healthGradient;
         ctx.fillRect(
             renderX,
-            renderY - barHeight - 10,
+            barY,
             barWidth * healthPercentage,
             barHeight
         );
 
-        // Borde de la barra
+        // Efecto de brillo en la barra
+        const glowGradient = ctx.createLinearGradient(
+            renderX,
+            barY,
+            renderX,
+            barY + barHeight
+        );
+        glowGradient.addColorStop(0, 'rgba(255, 255, 255, 0.4)');
+        glowGradient.addColorStop(0.5, 'rgba(255, 255, 255, 0)');
+        glowGradient.addColorStop(1, 'rgba(0, 0, 0, 0.3)');
+
+        ctx.fillStyle = glowGradient;
+        ctx.fillRect(
+            renderX,
+            barY,
+            barWidth * healthPercentage,
+            barHeight
+        );
+
+        // Borde de la barra con brillo
         ctx.strokeStyle = '#fff';
         ctx.lineWidth = 2;
-        ctx.strokeRect(renderX, renderY - barHeight - 10, barWidth, barHeight);
+        ctx.strokeRect(renderX, barY, barWidth, barHeight);
 
-        // Indicador de fase
+        // Marcadores de daño
+        ctx.strokeStyle = 'rgba(255, 255, 255, 0.2)';
+        ctx.lineWidth = 1;
+        for (let i = 1; i < 4; i++) {
+            const markX = renderX + (barWidth / 4) * i;
+            ctx.beginPath();
+            ctx.moveTo(markX, barY);
+            ctx.lineTo(markX, barY + barHeight);
+            ctx.stroke();
+        }
+
+        // Indicador de fase con efecto de brillo
+        ctx.shadowColor = color.length ? `rgb(${color[0]}, ${color[1]}, ${color[2]})` : '#f00';
+        ctx.shadowBlur = 10;
         ctx.fillStyle = '#fff';
-        ctx.font = '12px "Press Start 2P"';
+        ctx.font = '14px "Press Start 2P"';
         ctx.textAlign = 'center';
-        ctx.fillText(`FASE ${this.phase}`, renderX + this.width / 2, renderY - 25);
+        ctx.fillText(`FASE ${this.phase}`, renderX + this.width / 2, renderY - 28);
+
+        // Texto de nombre del boss
+        ctx.shadowBlur = 8;
+        ctx.font = '10px "Press Start 2P"';
+        ctx.fillStyle = '#f00';
+        ctx.fillText(`MEGA ROBOT LV.${this.level}`, renderX + this.width / 2, renderY - 45);
+        ctx.shadowBlur = 0;
 
         ctx.restore();
 
@@ -376,14 +517,5 @@ class Boss {
 
     getHealthPercentage() {
         return (this.health / this.maxHealth) * 100;
-    }
-
-    enable3DMode() {
-        this.is3D = true;
-    }
-
-    disable3DMode() {
-        this.is3D = false;
-        this.rotation3D = { x: 0, y: 0, z: 0 };
     }
 }

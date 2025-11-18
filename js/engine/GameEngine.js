@@ -250,14 +250,6 @@ class GameEngine {
             );
 
             this.audioSystem.play('boss');
-
-            // Activar modo 3D si está soportado
-            if (this.renderer3D.isSupported()) {
-                setTimeout(() => {
-                    this.renderer3D.activate();
-                    this.gameState.boss.enable3DMode();
-                }, 2000);
-            }
         });
     }
 
@@ -512,11 +504,6 @@ class GameEngine {
                         );
                         this.audioSystem.play('explosion');
 
-                        // Desactivar modo 3D
-                        if (this.renderer3D.active) {
-                            this.renderer3D.deactivate();
-                        }
-
                         this.gameState.boss = null;
                         this.gameState.bossMode = false;
                         this.sceneGenerator.setBossMode(false);
@@ -697,10 +684,5 @@ class GameEngine {
             this.particleSystem,
             this.sceneGenerator
         );
-
-        // Renderizado 3D del boss si está activo
-        if (this.gameState.boss && this.gameState.boss.is3D && this.renderer3D.active) {
-            this.renderer3D.render(this.gameState.boss, this.gameTime);
-        }
     }
 }

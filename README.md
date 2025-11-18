@@ -1,6 +1,6 @@
 # 🚀 Space IA Invaders - Humans vs Robots
 
-Un juego de Space Invaders estilo 16 bits altamente entretenido donde la humanidad lucha contra la invasión robótica. El juego cuenta con gráficos retro, efectos especiales, power-ups, múltiples armas y épicas batallas contra jefes finales con efectos 3D.
+Un juego de Space Invaders estilo 16 bits altamente entretenido donde la humanidad lucha contra la invasión robótica. El juego cuenta con gráficos retro, efectos especiales impactantes, power-ups, múltiples armas y épicas batallas contra jefes finales con efectos visuales espectaculares.
 
 ![Version](https://img.shields.io/badge/version-1.0.0-blue.svg)
 ![License](https://img.shields.io/badge/license-MIT-green.svg)
@@ -32,9 +32,9 @@ Un juego de Space Invaders estilo 16 bits altamente entretenido donde la humanid
 
 ### Boss Fights
 - **Jefes finales épicos** cada 3 niveles
-- **Transición 2D a 3D** usando WebGL
-- **Sistema de fases** que aumenta la dificultad
-- **Puntos débiles destructibles**
+- **Efectos visuales espectaculares** con escudos rotatorios y rayos de energía
+- **Sistema de 3 fases** que aumenta la dificultad progresivamente
+- **Puntos débiles destructibles** con auras pulsantes
 - **Múltiples patrones de ataque**:
   - Disparo en abanico
   - Espiral
@@ -51,7 +51,8 @@ Un juego de Space Invaders estilo 16 bits altamente entretenido donde la humanid
 - **Explosiones espectaculares** con múltiples frames
 - **Efectos de brillo y resplandor**
 - **Screen shake** en impactos
-- **Efectos 3D en boss battles**
+- **Efectos especiales en boss battles** (escudos, rayos de energía, auras pulsantes)
+- **Animaciones procedurales** suaves y fluidas
 
 ### Audio
 - **Sonidos procedurales** generados con Web Audio API
@@ -107,8 +108,8 @@ space_ia_invaders/
 │   │   ├── WeaponSystem.js
 │   │   └── AudioSystem.js
 │   ├── rendering/         # Renderizado
-│   │   ├── Renderer2D.js
-│   │   └── Renderer3D.js
+│   │   ├── Renderer2D.js  # Renderizado principal
+│   │   └── Renderer3D.js  # (Disponible pero no usado)
 │   └── ui/                # Interfaz de usuario
 │       ├── HUD.js
 │       └── Menu.js
@@ -196,11 +197,11 @@ gameDebug.getBoss()
 
 ## 🛠️ Tecnologías Utilizadas
 
-- **HTML5 Canvas** - Renderizado 2D
-- **WebGL** - Efectos 3D en boss battles
+- **HTML5 Canvas** - Renderizado 2D con efectos avanzados
 - **Web Audio API** - Sonidos procedurales
 - **JavaScript ES6+** - Lógica del juego
 - **CSS3** - Interfaz y animaciones
+- **Programación orientada a objetos** - Arquitectura modular y escalable
 
 ## 📊 Sistema de Puntuación
 
@@ -249,11 +250,7 @@ Edita `js/systems/WeaponSystem.js` para ajustar daño, cadencia, etc.
 - Cierra otras pestañas del navegador
 - Desactiva extensiones del navegador
 - Usa un navegador moderno (Chrome, Firefox, Edge)
-
-### WebGL no funciona
-- El juego funcionará en modo 2D
-- Actualiza los drivers de tu tarjeta gráfica
-- Prueba otro navegador
+- Reduce el zoom del navegador si es necesario
 
 ## 📝 Licencia
 
