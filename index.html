@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Space IA Invaders - Humans vs Robots</title>
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="css/game.css">
+</head>
+<body>
+    <div id="game-container">
+        <div id="menu-screen" class="screen active">
+            <h1 class="game-title">SPACE IA INVADERS</h1>
+            <h2 class="subtitle">HUMANS VS ROBOTS</h2>
+            <div class="menu-options">
+                <button id="start-btn" class="menu-btn">INICIAR MISIÓN</button>
+                <button id="instructions-btn" class="menu-btn">INSTRUCCIONES</button>
+                <button id="credits-btn" class="menu-btn">CRÉDITOS</button>
+            </div>
+            <div class="retro-border"></div>
+        </div>
+
+        <div id="instructions-screen" class="screen">
+            <h2>INSTRUCCIONES DE COMBATE</h2>
+            <div class="instructions-content">
+                <p><strong>CONTROLES:</strong></p>
+                <p>← → o A D - Mover nave</p>
+                <p>ESPACIO - Disparar</p>
+                <p>P - Pausar</p>
+
+                <p><strong>POWER-UPS:</strong></p>
+                <p>🔵 Escudo de energía</p>
+                <p>🔴 Triple disparo</p>
+                <p>⚡ Disparo láser continuo</p>
+                <p>💥 Bomba nuclear</p>
+                <p>❤️ Vida extra</p>
+
+                <p><strong>MISIÓN:</strong></p>
+                <p>Defiende la Tierra de la invasión robótica.</p>
+                <p>Destruye oleadas de enemigos y enfrenta a los jefes finales.</p>
+            </div>
+            <button id="back-btn" class="menu-btn">VOLVER</button>
+        </div>
+
+        <div id="game-screen" class="screen">
+            <canvas id="game-canvas"></canvas>
+            <canvas id="boss-canvas-3d" style="display:none;"></canvas>
+
+            <div id="hud">
+                <div class="hud-section">
+                    <span class="hud-label">PUNTUACIÓN:</span>
+                    <span id="score">0</span>
+                </div>
+                <div class="hud-section">
+                    <span class="hud-label">NIVEL:</span>
+                    <span id="level">1</span>
+                </div>
+                <div class="hud-section">
+                    <span class="hud-label">VIDAS:</span>
+                    <span id="lives">❤️❤️❤️</span>
+                </div>
+                <div class="hud-section">
+                    <span class="hud-label">ARMA:</span>
+                    <span id="weapon">BÁSICA</span>
+                </div>
+                <div id="health-bar-container">
+                    <div id="health-bar"></div>
+                </div>
+            </div>
+
+            <div id="pause-overlay" class="overlay" style="display:none;">
+                <h2>PAUSA</h2>
+                <button id="resume-btn" class="menu-btn">CONTINUAR</button>
+                <button id="quit-btn" class="menu-btn">SALIR</button>
+            </div>
+
+            <div id="game-over-overlay" class="overlay" style="display:none;">
+                <h2>MISIÓN FALLIDA</h2>
+                <p>PUNTUACIÓN FINAL: <span id="final-score">0</span></p>
+                <button id="restart-btn" class="menu-btn">REINTENTAR</button>
+                <button id="menu-btn" class="menu-btn">MENÚ PRINCIPAL</button>
+            </div>
+
+            <div id="level-complete-overlay" class="overlay" style="display:none;">
+                <h2>¡NIVEL COMPLETADO!</h2>
+                <p>PUNTUACIÓN: <span id="level-score">0</span></p>
+                <button id="next-level-btn" class="menu-btn">SIGUIENTE NIVEL</button>
+            </div>
+
+            <div id="boss-warning" class="overlay" style="display:none;">
+                <h1 class="warning-text">⚠️ ALERTA ⚠️</h1>
+                <h2 class="warning-text">JEFE ENEMIGO DETECTADO</h2>
+            </div>
+        </div>
+    </div>
+
+    <!-- Engine Core -->
+    <script src="js/engine/GameEngine.js"></script>
+    <script src="js/engine/Physics.js"></script>
+    <script src="js/engine/CollisionDetector.js"></script>
+
+    <!-- Rendering -->
+    <script src="js/rendering/Renderer2D.js"></script>
+    <script src="js/rendering/Renderer3D.js"></script>
+
+    <!-- Systems -->
+    <script src="js/systems/SpriteSystem.js"></script>
+    <script src="js/systems/ParticleSystem.js"></script>
+    <script src="js/systems/SceneGenerator.js"></script>
+    <script src="js/systems/FormationSystem.js"></script>
+    <script src="js/systems/WeaponSystem.js"></script>
+    <script src="js/systems/AudioSystem.js"></script>
+
+    <!-- Entities -->
+    <script src="js/entities/Projectile.js"></script>
+    <script src="js/entities/PowerUp.js"></script>
+    <script src="js/entities/Player.js"></script>
+    <script src="js/entities/Enemy.js"></script>
+    <script src="js/entities/Boss.js"></script>
+
+    <!-- UI -->
+    <script src="js/ui/HUD.js"></script>
+    <script src="js/ui/Menu.js"></script>
+
+    <!-- Main Entry Point -->
+    <script src="js/main.js"></script>
+</body>
+</html>
