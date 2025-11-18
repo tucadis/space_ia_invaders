@@ -79,12 +79,10 @@ class Renderer2D {
 
     renderEnemyProjectiles(projectiles, spriteSystem) {
         for (const projectile of projectiles) {
-            if (projectile.active) {
-                // Renderizar proyectil enemigo
-                const sprite = spriteSystem.getSprite('enemyBullet');
-                if (sprite) {
-                    this.ctx.drawImage(sprite, projectile.x, projectile.y);
-                }
+            // Renderizar proyectil enemigo
+            const sprite = spriteSystem.getSprite('enemyBullet');
+            if (sprite) {
+                this.ctx.drawImage(sprite, projectile.x, projectile.y);
             }
         }
     }

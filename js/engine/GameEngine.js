@@ -245,7 +245,7 @@ class GameEngine {
             const bossLevel = Math.floor(this.currentWave / this.levelConfig.bossEvery);
             this.gameState.boss = new Boss(
                 this.canvas.width / 2 - 64,
-                -128,
+                50,
                 bossLevel
             );
 
